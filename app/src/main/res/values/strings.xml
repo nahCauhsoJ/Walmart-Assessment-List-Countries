@@ -1,0 +1,8 @@
+<resources>
+    <string name="app_name">WalmartAssessmentListCountries</string>
+    <string name="countryFullName">%s, %s</string>
+    <string name="placeholderCountryFullName">United States of America, NA</string>
+    <string name="placeholderCountryCode">US</string>
+    <string name="placeholderCountryCapital">Washington, D.C.</string>
+    <string name="internetUnavailable">Internet Unavailable</string>
+</resources>
