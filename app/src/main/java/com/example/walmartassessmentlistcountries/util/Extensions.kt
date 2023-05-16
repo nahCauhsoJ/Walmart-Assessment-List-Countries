@@ -8,6 +8,8 @@ import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.example.walmartassessmentlistcountries.R
+import com.example.walmartassessmentlistcountries.data.dto.CountryDisplayItem
+import com.example.walmartassessmentlistcountries.data.dto.CountryResponseItem
 import com.google.android.material.snackbar.Snackbar
 
 fun <T : ViewModel> T.createFactory(): ViewModelProvider.Factory {
@@ -35,3 +37,7 @@ fun Context.isInternetAvailable(): Boolean {
         networkCapabilities?.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET) ?: false
     } ?: false
 }
+
+fun List<CountryResponseItem>.toSealed(): MutableList<CountryDisplayItem> = this.map {
+    CountryDisplayItem.Item(it)
+}.toMutableList()

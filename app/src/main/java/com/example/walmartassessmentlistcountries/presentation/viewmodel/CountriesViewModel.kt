@@ -1,29 +1,25 @@
 package com.example.walmartassessmentlistcountries.presentation.viewmodel
 
-import android.app.Application
-import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.walmartassessmentlistcountries.R
-import com.example.walmartassessmentlistcountries.data.dto.CountryResponse
+import com.example.walmartassessmentlistcountries.data.dto.CountryDisplayItem
 import com.example.walmartassessmentlistcountries.data.dto.CountryResponseItem
 import com.example.walmartassessmentlistcountries.domain.GetCountriesUseCase
+import com.example.walmartassessmentlistcountries.util.ErrorBody
 import com.example.walmartassessmentlistcountries.util.ResponseState
-import com.example.walmartassessmentlistcountries.util.isInternetAvailable
+import com.example.walmartassessmentlistcountries.util.toSealed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class CountriesViewModel(
-    private val application: Application,
     private val getCountriesUseCase: GetCountriesUseCase
-): AndroidViewModel(application) {
-    private val _countryListLiveData = MutableLiveData<List<CountryResponseItem>>()
-    val countryListLiveData: LiveData<List<CountryResponseItem>> = _countryListLiveData
-
-    private val _countryListFilteredLiveData = MutableLiveData<List<CountryResponseItem>>()
-    val countryListFilteredLiveData: LiveData<List<CountryResponseItem>> = _countryListFilteredLiveData
+): ViewModel() {
+    private val _countryListLiveData = MutableLiveData<List<CountryDisplayItem>>()
+    val countryListLiveData: LiveData<List<CountryDisplayItem>> = _countryListLiveData
 
     private val _searchInput = MutableLiveData<String>("")
     val searchInput: LiveData<String> = _searchInput
@@ -31,20 +27,10 @@ class CountriesViewModel(
     private val _isLoadingData = MutableLiveData(false)
     val isLoadingData: LiveData<Boolean> = _isLoadingData
 
-    private val _errorMessage = MutableLiveData<String?>()
-    val errorMessage: LiveData<String?> = _errorMessage
-
-    private val _isInternetAvailable = MutableLiveData<Boolean>()
-    val isInternetAvailable: LiveData<Boolean> = _isInternetAvailable
-
-    private val resources = application.applicationContext.resources
+    private val _errorMessage = MutableLiveData<ErrorBody>()
+    val errorMessage: LiveData<ErrorBody> = _errorMessage
 
     private var countryJob: Job? = null
-    private var internetJob: Job? = null
-
-    init{
-        checkInternetConnectivity()
-    }
 
     fun getCountries() {
         _isLoadingData.value = true
@@ -53,16 +39,39 @@ class CountriesViewModel(
                 when (this) {
                     is ResponseState.Success -> {
                         val response = body
-                        _countryListLiveData.postValue(response.sortedBy { it.name })
-                        //filterSearch(_searchInput.value ?: "")
+                        val justItemList = response.sortedBy { it.name }.toSealed()
+                        val originalSize = justItemList.size
+
+                        val occurredHeader = mutableSetOf<Char>()
+                        var currentLetter = ""
+                        for (i in 0 until originalSize) {
+                            val reversedIndex = originalSize - i - 1
+                            val item = justItemList[reversedIndex] as CountryDisplayItem.Item
+                            val firstLetter = item.data.name[0]
+
+                            if (!occurredHeader.contains(firstLetter)) {
+                                occurredHeader.add(firstLetter)
+
+                                if (currentLetter.isNotEmpty()) {
+                                    justItemList.add(reversedIndex + 1, CountryDisplayItem.Header(
+                                        currentLetter
+                                    ))
+                                }
+
+                                currentLetter = firstLetter.toString()
+                            }
+                        }
+                        justItemList.add(0, CountryDisplayItem.Header(currentLetter))
+
+                        _countryListLiveData.postValue(justItemList.toList())
                     }
 
                     is ResponseState.Error -> {
-                        _errorMessage.postValue(errorBody)
+                        _errorMessage.postValue(ErrorBody.Message(errorBody ?: ""))
                     }
 
                     is ResponseState.NetworkError -> {
-                        _errorMessage.postValue(resources.getString(R.string.internetUnavailable))
+                        _errorMessage.postValue(ErrorBody.StringResource(R.string.internetUnavailable))
                     }
 
                     else -> {}
@@ -73,16 +82,8 @@ class CountriesViewModel(
         }
     }
 
-    private fun checkInternetConnectivity() {
-        internetJob = viewModelScope.launch(Dispatchers.IO) {
-            val isInternetAvailable = application.applicationContext.isInternetAvailable()
-            _isInternetAvailable.postValue(isInternetAvailable)
-        }
-    }
-
     override fun onCleared() {
         super.onCleared()
         countryJob?.cancel()
-        internetJob?.cancel()
     }
 }
