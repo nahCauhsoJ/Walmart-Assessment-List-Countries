@@ -4,12 +4,11 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.domain.model.CountryDisplayItem
+import com.example.domain.usecase.GetCountriesUseCase
+import com.example.domain.util.ErrorBody
+import com.example.domain.util.ResponseState
 import com.example.walmartassessmentlistcountries.R
-import com.example.walmartassessmentlistcountries.data.dto.CountryDisplayItem
-import com.example.walmartassessmentlistcountries.data.dto.CountryResponseItem
-import com.example.walmartassessmentlistcountries.domain.GetCountriesUseCase
-import com.example.walmartassessmentlistcountries.util.ErrorBody
-import com.example.walmartassessmentlistcountries.util.ResponseState
 import com.example.walmartassessmentlistcountries.util.toSealed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job

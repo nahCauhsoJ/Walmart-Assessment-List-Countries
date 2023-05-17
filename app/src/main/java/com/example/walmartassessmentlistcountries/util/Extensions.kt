@@ -7,9 +7,9 @@ import android.view.View
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
+import com.example.domain.model.CountryDisplayItem
+import com.example.domain.model.CountryResponseItem
 import com.example.walmartassessmentlistcountries.R
-import com.example.walmartassessmentlistcountries.data.dto.CountryDisplayItem
-import com.example.walmartassessmentlistcountries.data.dto.CountryResponseItem
 import com.google.android.material.snackbar.Snackbar
 
 fun <T : ViewModel> T.createFactory(): ViewModelProvider.Factory {

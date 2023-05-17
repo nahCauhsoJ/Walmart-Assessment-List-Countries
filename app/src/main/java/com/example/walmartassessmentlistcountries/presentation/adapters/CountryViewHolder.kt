@@ -2,8 +2,7 @@ package com.example.walmartassessmentlistcountries.presentation.adapters
 
 import androidx.recyclerview.widget.RecyclerView
 import com.example.walmartassessmentlistcountries.R
-import com.example.walmartassessmentlistcountries.data.dto.CountryDisplayItem
-import com.example.walmartassessmentlistcountries.data.dto.CountryResponseItem
+import com.example.domain.model.CountryDisplayItem
 import com.example.walmartassessmentlistcountries.databinding.CountryHeaderItemBinding
 import com.example.walmartassessmentlistcountries.databinding.CountryItemBinding
 
