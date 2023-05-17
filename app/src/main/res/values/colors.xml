@@ -4,4 +4,8 @@
     <color name="white">#FFFFFFFF</color>
     <color name="snackbar_error_text">#FF0000</color>
     <color name="snackbar_error_background">#5A1111</color>
+    <color name="country_header_bg">#DA4E4A4A</color>
+    <color name="country_header_text">#FFFFFF</color>
+    <color name="search_color">#000000</color>
+    <color name="country_name_text">#2196F3</color>
 </resources>

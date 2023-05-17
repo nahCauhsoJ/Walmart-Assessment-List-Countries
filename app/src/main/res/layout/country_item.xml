@@ -5,23 +5,24 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:layout_margin="8dp"
-    app:cardBackgroundColor="#8F8E8E"
+    app:cardBackgroundColor="#E1D8D8"
     app:cardCornerRadius="8dp"
-    app:cardElevation="8dp"
+    app:cardElevation="4dp"
     app:contentPadding="8dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_margin="8dp"
+        android:layout_margin="4dp"
         android:minHeight="100dp">
 
         <androidx.appcompat.widget.AppCompatTextView
             android:id="@+id/cardCountryName"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="8dp"
+            android:layout_marginEnd="4dp"
             android:textSize="24sp"
+            android:textColor="@color/country_name_text"
             app:layout_constraintBottom_toTopOf="@+id/cardCountryCapital"
             app:layout_constraintEnd_toStartOf="@+id/cardCountryCode"
             app:layout_constraintHorizontal_bias="0.0"
@@ -33,7 +34,7 @@
             android:id="@+id/cardCountryCode"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="#F80000"
+            android:textColor="#000000"
             android:textSize="28sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="@+id/cardCountryName"

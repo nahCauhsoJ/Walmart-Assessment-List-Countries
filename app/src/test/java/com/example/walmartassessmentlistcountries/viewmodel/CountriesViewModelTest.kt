@@ -1,11 +1,9 @@
 package com.example.walmartassessmentlistcountries.viewmodel
 
 import androidx.arch.core.executor.testing.InstantTaskExecutorRule
-import com.example.domain.model.CountryResponseItem
-import com.example.domain.model.Currency
-import com.example.domain.model.Language
-import com.example.domain.usecase.GetCountriesUseCase
-import com.example.domain.util.ResponseState
+import com.sample.data_layer.model.CountryResponseItemEntity
+import com.example.domain_layer.model.CurrencyEntity
+import com.example.domain_layer.model.LanguageEntity
 import com.example.walmartassessmentlistcountries.presentation.viewmodel.CountriesViewModel
 import io.mockk.coEvery
 import io.mockk.coVerify
@@ -18,7 +16,7 @@ import org.junit.rules.TestRule
 
 class CountriesViewModelTest {
 
-    private val useCaseClass = mockk<GetCountriesUseCase>()
+    private val useCaseClass = mockk<com.example.domain_layer.usecase.GetCountriesUseCase>()
     private lateinit var vm: CountriesViewModel
 
     @get:Rule
@@ -31,7 +29,7 @@ class CountriesViewModelTest {
 
     @Test
     fun `GIVEN usecase WHEN empty THEN list is empty`() = runTest {
-        coEvery{ useCaseClass.getAllCountries() } returns ResponseState.Success(
+        coEvery{ useCaseClass.getAllCountries() } returns com.example.domain_layer.util.ResponseState.Success(
             listOf()
         )
 
@@ -43,19 +41,19 @@ class CountriesViewModelTest {
 
     @Test
     fun `GIVEN usecase WHEN one item THEN item matches`() = runTest {
-        coEvery{ useCaseClass.getAllCountries() } returns ResponseState.Success(
+        coEvery{ useCaseClass.getAllCountries() } returns com.example.domain_layer.util.ResponseState.Success(
             listOf(
-                CountryResponseItem(
+                CountryResponseItemEntity(
                     "",
                     "",
-                    Currency(
+                    CurrencyEntity(
                         "",
                         "",
                         null
                     ),
                     null,
                     "",
-                    Language(
+                    LanguageEntity(
                         null,
                         null,
                         "",

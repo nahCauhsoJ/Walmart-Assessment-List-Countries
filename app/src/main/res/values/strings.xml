@@ -5,4 +5,5 @@
     <string name="placeholderCountryCode">US</string>
     <string name="placeholderCountryCapital">Washington, D.C.</string>
     <string name="internetUnavailable">Internet Unavailable</string>
+    <string name="search_hint">Search Country</string>
 </resources>

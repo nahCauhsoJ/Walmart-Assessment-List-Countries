@@ -16,3 +16,5 @@ rootProject.name = "WalmartAssessmentListCountries"
 include ':app'
 include ':domain'
 include ':data'
+include ':data_layer'
+include ':domain_layer'

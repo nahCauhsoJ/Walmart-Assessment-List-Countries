@@ -4,10 +4,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.domain.model.CountryDisplayItem
-import com.example.domain.usecase.GetCountriesUseCase
-import com.example.domain.util.ErrorBody
-import com.example.domain.util.ResponseState
+import com.example.domain_layer.model.CountryDisplayItem
 import com.example.walmartassessmentlistcountries.R
 import com.example.walmartassessmentlistcountries.util.toSealed
 import kotlinx.coroutines.Dispatchers
@@ -15,7 +12,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
 
 class CountriesViewModel(
-    private val getCountriesUseCase: GetCountriesUseCase
+    private val getCountriesUseCase: com.example.domain_layer.usecase.GetCountriesUseCase
 ): ViewModel() {
     private val _countryListLiveData = MutableLiveData<List<CountryDisplayItem>>()
     val countryListLiveData: LiveData<List<CountryDisplayItem>> = _countryListLiveData
@@ -26,8 +23,8 @@ class CountriesViewModel(
     private val _isLoadingData = MutableLiveData(false)
     val isLoadingData: LiveData<Boolean> = _isLoadingData
 
-    private val _errorMessage = MutableLiveData<ErrorBody>()
-    val errorMessage: LiveData<ErrorBody> = _errorMessage
+    private val _errorMessage = MutableLiveData<com.example.domain_layer.util.ErrorBody>()
+    val errorMessage: LiveData<com.example.domain_layer.util.ErrorBody> = _errorMessage
 
     private var countryJob: Job? = null
 
@@ -36,7 +33,7 @@ class CountriesViewModel(
         countryJob = viewModelScope.launch(Dispatchers.IO) {
             getCountriesUseCase.getAllCountries().apply {
                 when (this) {
-                    is ResponseState.Success -> {
+                    is com.example.domain_layer.util.ResponseState.Success -> {
                         val response = body
                         val justItemList = response.sortedBy { it.name }.toSealed()
                         val originalSize = justItemList.size
@@ -65,12 +62,12 @@ class CountriesViewModel(
                         _countryListLiveData.postValue(justItemList.toList())
                     }
 
-                    is ResponseState.Error -> {
-                        _errorMessage.postValue(ErrorBody.Message(errorBody ?: ""))
+                    is com.example.domain_layer.util.ResponseState.Error -> {
+                        _errorMessage.postValue(com.example.domain_layer.util.ErrorBody.Message(errorBody ?: ""))
                     }
 
-                    is ResponseState.NetworkError -> {
-                        _errorMessage.postValue(ErrorBody.StringResource(R.string.internetUnavailable))
+                    is com.example.domain_layer.util.ResponseState.NetworkError -> {
+                        _errorMessage.postValue(com.example.domain_layer.util.ErrorBody.StringResource(R.string.internetUnavailable))
                     }
 
                     else -> {}

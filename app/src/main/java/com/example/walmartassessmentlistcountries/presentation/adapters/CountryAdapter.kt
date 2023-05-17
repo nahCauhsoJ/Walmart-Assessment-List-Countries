@@ -3,7 +3,7 @@ package com.example.walmartassessmentlistcountries.presentation.adapters
 import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
-import com.example.domain.model.CountryDisplayItem
+import com.example.domain_layer.model.CountryDisplayItem
 import com.example.walmartassessmentlistcountries.databinding.CountryHeaderItemBinding
 import com.example.walmartassessmentlistcountries.databinding.CountryItemBinding
 

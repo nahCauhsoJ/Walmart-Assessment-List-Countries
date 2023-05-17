@@ -6,11 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.data.api.RetrofitClient
-import com.example.data.repository.CountriesRepositoryImpl
-import com.example.domain.model.CountryDisplayItem
-import com.example.domain.usecase.GetCountriesUseCase
-import com.example.domain.util.ErrorBody
+import com.sample.data_layer.api.RetrofitClient
+import com.sample.data_layer.repository.CountriesRepositoryImpl
+import com.example.domain_layer.model.CountryDisplayItem
+import com.example.domain_layer.usecase.GetCountriesUseCase
+import com.example.domain_layer.util.ErrorBody
 import com.example.walmartassessmentlistcountries.R
 import com.example.walmartassessmentlistcountries.databinding.ActivityCountryListBinding
 import com.example.walmartassessmentlistcountries.presentation.adapters.CountryAdapter
@@ -18,6 +18,9 @@ import com.example.walmartassessmentlistcountries.presentation.viewmodel.Countri
 import com.example.walmartassessmentlistcountries.util.createFactory
 import com.example.walmartassessmentlistcountries.util.isInternetAvailable
 import com.example.walmartassessmentlistcountries.util.showErrorSnackbar
+import com.sample.data_layer.mapper.CountryMapper
+import com.sample.data_layer.mapper.CurrencyMapper
+import com.sample.data_layer.mapper.LanguageMapper
 
 class CountryListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCountryListBinding
@@ -52,7 +55,14 @@ class CountryListActivity : AppCompatActivity() {
     }
 
     private fun initViewModel() {
-        val repository = CountriesRepositoryImpl(RetrofitClient.instanceCountry)
+        val repository =
+            CountriesRepositoryImpl(
+                RetrofitClient.instanceCountry,
+                CountryMapper(
+                    CurrencyMapper(),
+                    LanguageMapper()
+                )
+            )
         val factory = CountriesViewModel(
             GetCountriesUseCase(repository)
         ).createFactory()
