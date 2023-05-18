@@ -1,13 +1,13 @@
 package com.example.walmartassessmentlistcountries.presentation.activity
 
+import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.accessibility.AccessibilityEventCompat.setAction
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.sample.data_layer.api.RetrofitClient
-import com.sample.data_layer.repository.CountriesRepositoryImpl
 import com.example.domain_layer.model.CountryDisplayItem
 import com.example.domain_layer.usecase.GetCountriesUseCase
 import com.example.domain_layer.util.ErrorBody
@@ -18,9 +18,13 @@ import com.example.walmartassessmentlistcountries.presentation.viewmodel.Countri
 import com.example.walmartassessmentlistcountries.util.createFactory
 import com.example.walmartassessmentlistcountries.util.isInternetAvailable
 import com.example.walmartassessmentlistcountries.util.showErrorSnackbar
+import com.google.android.material.snackbar.Snackbar
+import com.sample.data_layer.api.RetrofitClient
 import com.sample.data_layer.mapper.CountryMapper
 import com.sample.data_layer.mapper.CurrencyMapper
 import com.sample.data_layer.mapper.LanguageMapper
+import com.sample.data_layer.repository.CountriesRepositoryImpl
+
 
 class CountryListActivity : AppCompatActivity() {
     private lateinit var binding: ActivityCountryListBinding
@@ -28,11 +32,14 @@ class CountryListActivity : AppCompatActivity() {
     private val countries = mutableListOf<CountryDisplayItem>()
     private lateinit var countriesAdapter: CountryAdapter
 
+    private var networkSnackbar: Snackbar? = null
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         initViewModel()
         setupObserver()
+        setupNetworkStatus()
 
         binding = ActivityCountryListBinding.inflate(layoutInflater)
         setContentView(binding.root)
@@ -97,5 +104,31 @@ class CountryListActivity : AppCompatActivity() {
                 binding.root.showErrorSnackbar(err)
             }
         }
+    }
+
+    private fun setupNetworkStatus() {
+        countriesViewModel.networkManager.startCallback(
+            getSystemService(CONNECTIVITY_SERVICE) as ConnectivityManager
+        )
+
+        countriesViewModel.networkAvailability.observe(this) {
+            if (it) {
+//                networkSnackbar?.dismiss()
+//                networkSnackbar = null
+            } else {
+                openNetworkSnackbar()
+            }
+        }
+    }
+
+    private fun openNetworkSnackbar() {
+        networkSnackbar = Snackbar.make(
+            binding.root, "Internet unavailable", Snackbar.LENGTH_INDEFINITE)
+            .setAction("Retry") {
+                networkSnackbar?.dismiss()
+                if (!isInternetAvailable()) openNetworkSnackbar()
+                else countriesViewModel.getCountries()
+            }
+        networkSnackbar?.show()
     }
 }

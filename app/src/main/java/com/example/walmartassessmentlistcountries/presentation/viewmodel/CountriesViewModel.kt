@@ -5,7 +5,9 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain_layer.model.CountryDisplayItem
+import com.example.domain_layer.util.ErrorBody
 import com.example.walmartassessmentlistcountries.R
+import com.example.walmartassessmentlistcountries.util.NetworkManager
 import com.example.walmartassessmentlistcountries.util.toSealed
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
@@ -17,16 +19,27 @@ class CountriesViewModel(
     private val _countryListLiveData = MutableLiveData<List<CountryDisplayItem>>()
     val countryListLiveData: LiveData<List<CountryDisplayItem>> = _countryListLiveData
 
-    private val _searchInput = MutableLiveData<String>("")
+    private val _searchInput = MutableLiveData("")
     val searchInput: LiveData<String> = _searchInput
 
     private val _isLoadingData = MutableLiveData(false)
     val isLoadingData: LiveData<Boolean> = _isLoadingData
 
-    private val _errorMessage = MutableLiveData<com.example.domain_layer.util.ErrorBody>()
-    val errorMessage: LiveData<com.example.domain_layer.util.ErrorBody> = _errorMessage
+    private val _errorMessage = MutableLiveData<ErrorBody>()
+    val errorMessage: LiveData<ErrorBody> = _errorMessage
 
     private var countryJob: Job? = null
+
+    private val _networkAvailability = MutableLiveData(false)
+    val networkAvailability: LiveData<Boolean> = _networkAvailability
+    val networkManager = NetworkManager(
+        onAvailable = {
+            _networkAvailability.postValue(true)
+        },
+        onLost = {
+            _networkAvailability.postValue(false)
+        }
+    )
 
     fun getCountries() {
         _isLoadingData.value = true
