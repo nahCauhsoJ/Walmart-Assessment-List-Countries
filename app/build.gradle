@@ -51,7 +51,7 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
     implementation project(':domain_layer')
     implementation project(':data_layer')
-
+    implementation 'androidx.room:room-ktx:2.5.1'
 
     testImplementation 'junit:junit:4.13.2'
     testImplementation 'io.mockk:mockk:1.13.4'

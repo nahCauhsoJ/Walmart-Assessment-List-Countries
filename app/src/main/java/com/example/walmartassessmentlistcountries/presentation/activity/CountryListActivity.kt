@@ -4,10 +4,10 @@ import android.net.ConnectivityManager
 import android.os.Bundle
 import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.accessibility.AccessibilityEventCompat.setAction
 import androidx.core.widget.addTextChangedListener
 import androidx.lifecycle.ViewModelProvider
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.room.Room
 import com.example.domain_layer.model.CountryDisplayItem
 import com.example.domain_layer.usecase.GetCountriesUseCase
 import com.example.domain_layer.util.ErrorBody
@@ -20,6 +20,8 @@ import com.example.walmartassessmentlistcountries.util.isInternetAvailable
 import com.example.walmartassessmentlistcountries.util.showErrorSnackbar
 import com.google.android.material.snackbar.Snackbar
 import com.sample.data_layer.api.RetrofitClient
+import com.sample.data_layer.database.AppDatabase
+import com.sample.data_layer.mapper.CountryLocalMapper
 import com.sample.data_layer.mapper.CountryMapper
 import com.sample.data_layer.mapper.CurrencyMapper
 import com.sample.data_layer.mapper.LanguageMapper
@@ -57,18 +59,26 @@ class CountryListActivity : AppCompatActivity() {
             }
         }
 
-        if (isInternetAvailable()) countriesViewModel.getCountries()
-        else binding.root.showErrorSnackbar(resources.getString(R.string.internetUnavailable))
+        if (countriesViewModel.networkAvailability.value == true)
+            countriesViewModel.getCountries()
+        //else binding.root.showErrorSnackbar(resources.getString(R.string.internetUnavailable))
     }
 
     private fun initViewModel() {
+        val appDatabase = Room.databaseBuilder(
+            applicationContext,
+            AppDatabase::class.java, AppDatabase.dbName
+        ).build()
+
         val repository =
             CountriesRepositoryImpl(
                 RetrofitClient.instanceCountry,
+                appDatabase.countriesDao(),
                 CountryMapper(
                     CurrencyMapper(),
                     LanguageMapper()
-                )
+                ),
+                CountryLocalMapper()
             )
         val factory = CountriesViewModel(
             GetCountriesUseCase(repository)
@@ -112,13 +122,10 @@ class CountryListActivity : AppCompatActivity() {
         )
 
         countriesViewModel.networkAvailability.observe(this) {
-            if (it) {
-//                networkSnackbar?.dismiss()
-//                networkSnackbar = null
-            } else {
-                openNetworkSnackbar()
-            }
+            if (!it) openNetworkSnackbar()
         }
+
+        countriesViewModel.initNetworkStatus(isInternetAvailable())
     }
 
     private fun openNetworkSnackbar() {

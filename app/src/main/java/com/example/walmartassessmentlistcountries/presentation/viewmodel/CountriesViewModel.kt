@@ -30,7 +30,7 @@ class CountriesViewModel(
 
     private var countryJob: Job? = null
 
-    private val _networkAvailability = MutableLiveData(false)
+    private val _networkAvailability = MutableLiveData(true)
     val networkAvailability: LiveData<Boolean> = _networkAvailability
     val networkManager = NetworkManager(
         onAvailable = {
@@ -89,6 +89,11 @@ class CountriesViewModel(
                 _isLoadingData.postValue(false)
             }
         }
+    }
+
+    // To get the initial status it requires context to run isInternetAvailable
+    fun initNetworkStatus(isInternetAvailable: Boolean) {
+        _networkAvailability.value = isInternetAvailable
     }
 
     override fun onCleared() {
